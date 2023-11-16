@@ -181,7 +181,7 @@ plot1=
 
 plot1
 ```
-## Interpretation:
+
 The graph shows a positive association between true mean and power.As the effect size goes up from 0 to 6, power goes up from 0.00 to 1.00. This is because a larger effect size is associated with increased statistical power, making it easier to detect a statistically significant difference.
 
 ```{r}
@@ -208,6 +208,6 @@ bind_rows(average_mean,re_average_mean)|>
        y = "Average Estimate of μ̂") +
   theme_minimal()
 ```
-## Is the sample average of μ̂ across tests for which the null is rejected approximately equal to the true value of μ? Why or why not?
+
 When the true value of mu is from 0 to 3, sample average of μ̂ is different from the true value of mu because the power and effect size is small. When the true value of mu is from 4-6, sample average of μ̂ is approximately equal to the true value of mu because the effect size and power is larger. When the effect size is smaller, there is a lower power and fewer rejection from tests.
 

@@ -120,7 +120,7 @@ This figure suggests a very wide range in the rate at which homicides are solved
 ```{r}
 
 # Step 1: Get a list of file names in the directory
-file_path = list.files(path = "data", pattern = "\\.csv$", full.names = TRUE)
+file_path = list.files(path = "data/question 2", pattern = "\\.csv$", full.names = TRUE)
 #Iterate over file names and read in data for each subject using purrr::map and saving the result as a new variable in the dataframe
 data= 
   file_path |> as.data.frame() |> mutate(data=map(file_path,read_csv)) |> as.tibble() |> unnest() |> 
@@ -136,14 +136,18 @@ mutate(
     ) |> 
   separate(file_path, into = c('arm','subject_id'), sep='\\_') 
 
+head(data)
 #Make a spaghetti plot
-data |>mutate(subject_id=factor(subject_id),arm=factor(arm)) |>  
-  ggplot(aes (x=week , y=observation,color=arm))+
+data |>
+  mutate(subject_id=factor(subject_id),arm=factor(arm)) |>  
+  ggplot(aes (x=week , y=observation,color=subject_id))+
   geom_line(aes(group=subject_id))+
-  facet_grid(~arm)
+  facet_grid(~arm)+
+    labs(title = "Observations Over Time by Subject", x = "Week", y = "Observation")+
+  theme_minimal()
 
 ```
-The pattern of observation for exposure group is higher than the pattern of observation for the control group from week 1 to week 8. For control group, the observation is oscillateed around 1.25 through week1 to week8. For exposure group, the observation has increase pattern from week 1 to week 8. There are more negative observation in control group than those in the exposure group.
+The pattern of observation for exposure group is significantly higher than the pattern of observation for the control group from week 1 to week 8. For control group, the observation is oscillateed around 1.25 through week1 to week8. For exposure group, the observation has sharp increase from week 1 to week 8. There are more negative observation in control group than those in the exposure group.
 
 ## question 3
 ```{r}
@@ -162,18 +166,25 @@ repeat_result =
   ) |> 
   mutate(estimate_df = map(mu, sim_mean_p)) |> 
   unnest(estimate_df)
+head(repeat_result)
 ## Make a plot showing the proportion of times the null was rejected (the power of the test) on the y axis and the true value of μ on the x axis.
-plot1=
+plot1= 
   repeat_result|>
   group_by(mu) |> 
   mutate(reject= as.numeric(p.value<0.05)) |> 
   summarise(power = mean(reject)) |>
   ggplot(aes(x=mu, y=power))+
-  geom_path()
+  geom_point()+
+  geom_path()+
+  labs(title = "Power vs Effect Size",
+       x = "Effect Size",
+       y = "Power") +
+  theme_minimal()
 
 plot1
 ```
-Interpretation:As the effect size goes up from 0 to 6, power goes up from 0.00 to 1.00.
+##Interpretation:
+The graph shows a positive association between true mean and power.As the effect size goes up from 0 to 6, power goes up from 0.00 to 1.00. This is because a larger effect size is associated with increased statistical power, making it easier to detect a statistically significant difference.
 
 ```{r}
 ##Make a plot showing the average estimate of μ̂ on the y axis and the true value of μ on the x axis. Make a second plot (or overlay on the first) the average estimate of μ̂ only in samples for which the null was rejected on the y axis and the true value of μ on the x axis.
@@ -181,20 +192,24 @@ average_mean=
   repeat_result |> 
   group_by(mu) |> 
   summarise(average=mean(estimate)) |> 
-mutate(case='case1')
+mutate(case='average estimate of μ')
 
 re_average_mean=
   repeat_result |> 
   filter(p.value<0.05) |> 
   group_by(mu) |> 
   summarise(average=mean(estimate)) |> 
-mutate(case= 'case2')
+mutate(case= 'null was rejected')
 
 bind_rows(average_mean,re_average_mean)|> 
   ggplot(aes(x=mu, y=average, color=case))+
   geom_point()+
-  geom_path()
+  geom_path()+
+  labs(title = "Average Estimate of μ̂",
+       x = "True mu",
+       y = "Average Estimate of μ̂") +
+  theme_minimal()
 ```
-Is the sample average of μ̂ across tests for which the null is rejected approximately equal to the true value of μ? Why or why not?
-The sample average of mu across tests for which the null is rejected approximately equal to the true value of mu
+## Is the sample average of μ̂ across tests for which the null is rejected approximately equal to the true value of μ? Why or why not?
+When the true value of mu is from 0 to 3, sample average of μ̂ is different from the true value of mu because the power and effect size is small. When the true value of mu is from 4-6, sample average of μ̂ is approximately equal to the true value of mu because the effect size and power is larger. When the effect size is smaller, there is a lower power and fewer rejection from tests.
 

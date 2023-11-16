@@ -43,8 +43,7 @@ Set seed for reproducibility.
 set.seed(12345)
 ```
 
-## question 1
-
+## Question 1
 For this problem, we are interested in data gathered and made public by _The Washington Post_ on homicides in 50 large U.S. cities. The code chunk below imports and cleans the data.
 
 ```{r}
@@ -115,8 +114,7 @@ test_results %>%
 This figure suggests a very wide range in the rate at which homicides are solved -- Chicago is noticeably high and, given the narrowness of the CI, likely is the location of many homicides. 
 
 
-## question 2 
-
+## Question 2 
 ```{r}
 
 # Step 1: Get a list of file names in the directory
@@ -126,7 +124,7 @@ data=
   file_path |> as.data.frame() |> mutate(data=map(file_path,read_csv)) |> as.tibble() |> unnest() |> 
 mutate(
   file_path=str_replace(file_path,'\\.csv', ''),
-  file_path=str_replace(file_path, 'data/','')
+  file_path=str_replace(file_path, 'data/question 2/','')
 ) |>   
   pivot_longer(
       week_1:week_8,
@@ -136,7 +134,7 @@ mutate(
     ) |> 
   separate(file_path, into = c('arm','subject_id'), sep='\\_') 
 
-head(data)
+data
 #Make a spaghetti plot
 data |>
   mutate(subject_id=factor(subject_id),arm=factor(arm)) |>  
@@ -149,7 +147,7 @@ data |>
 ```
 The pattern of observation for exposure group is significantly higher than the pattern of observation for the control group from week 1 to week 8. For control group, the observation is oscillateed around 1.25 through week1 to week8. For exposure group, the observation has sharp increase from week 1 to week 8. There are more negative observation in control group than those in the exposure group.
 
-## question 3
+## Question 3
 ```{r}
 sim_mean_p = function(mu,n=30,sd=5) {
   simulation=tibble(x=rnorm(n=30, mean = mu, sd = 5))
@@ -183,7 +181,7 @@ plot1=
 
 plot1
 ```
-##Interpretation:
+## Interpretation:
 The graph shows a positive association between true mean and power.As the effect size goes up from 0 to 6, power goes up from 0.00 to 1.00. This is because a larger effect size is associated with increased statistical power, making it easier to detect a statistically significant difference.
 
 ```{r}
